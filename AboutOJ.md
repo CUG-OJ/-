@@ -1,4 +1,9 @@
+前言
+
+由于洛谷开放平台与HUSTOJ关系恶化，HUSTOJ暂时无法爬取洛谷的题目。
+
 在home/judge文件夹中：
+
 ```shell
 ├── backup				#用于某些文件的备份
 ├── data
@@ -155,7 +160,192 @@ home/src/docker文件，编写了适应docker的代码，不常用，此处省�
 在home/src/install文件夹中
 
 ```shell
+├── A+B.xml
+├── add_dns_to_docker.sh
+├── ans2out
+├── archive
+│   ├── install-debian10-gitee.sh
+│   ├── install-deepin15.9.sh
+│   ├── install-raspbian8.sh
+│   ├── install-raspbian9.sh
+│   ├── install-ubuntu14.04.sh
+│   ├── install-ubuntu14-bytgz.sh
+│   ├── install-ubuntu16-bytgz.sh
+│   ├── install-ubuntu16+.sh
+│   ├── install-ubuntu18-bytgz.sh
+│   ├── install-ubuntu18-gitee.sh
+│   ├── install-ubuntu20-gitee.sh
+│   └── install-vjudge.sh
+├── autocpu.sh
+├── backup+.sh
+├── bak.sh
+├── cleanproblem.sh
+├── db.sql
+├── default.conf
+├── Dockerfile
+├── docker.sh
+├── fixdb.sh
+├── fixext.sh
+├── fixextxt.sh
+├── fixing.sh
+├── fixtxt.sh
+├── gcc.sh
+├── g++.sh
+├── hustoj
+├── install-centos7.sh
+├── install-debian10+.sh
+├── install-deepin20+.sh
+├── install-fedora21-loongson.sh
+├── install-judge.sh
+├── install-raspbian10.sh
+├── install+.sh
+├── install.sh
+├── install-ubuntu18.04.sh
+├── install-ubuntu20.04.sh
+├── install-ubuntu22.04-bt.sh
+├── install-ubuntu22.04.gitee.sh
+├── install-ubuntu22.04.sh
+├── install-ubuntu-bt.sh
+├── install-uos20.sh
+├── java0.policy
+├── jol.tar.gz
+├── judge_client
+├── judge.conf
+├── judged
+├── makeout.sh
+├── moodle.sql
+├── multiOJ.sh
+├── my-ifconfig.te
+├── my-phpfpm.te
+├── mysql.sh
+├── nginx.conf
+├── oomsaver.sh
+├── podman.sh
+├── README
+├── restore+.sh
+├── restore.sh
+├── rsync.sh
+├── selinux.sh
+├── sim.sh
+├── sources.list.sh
+├── stop.sh
+├── uninstall.sh
+├── update-by-download
+├── update-hustoj
+├── update.old.sql
+├── update-sources-ubuntu.sh
+└── update.sql
 ```
 
+在home/src/web文件夹中
 
+```shell
+├── ace
+├── admin
+├── bbs
+├── bsadmin
+├── highlight
+├── image				#存储网站的背景、图标
+├── include
+├── kindeditor
+├── lang				#语言文件，通过变量赋值的方式，翻译成不同的语言
+│   ├── cn.php			#--简体中文
+│   ├── cnt.php			#--繁体中文
+│   ├── en.php			#--英文
+│   ├── fa.php			#--法语
+│   ├── ko.php			#--朝鲜/韩国
+│   ├── ru.php			#--俄罗斯语言
+│   ├── th.php			#--泰国语言
+│   └── ug.php			#--乌干达语言
+├── mergely
+├── swadmin
+├── template			#此处存储着前端模板
+├── upload
+├── 404.html
+├── active.php
+├── balloon.php
+├── balloon_view.php
+├── bbs.php
+├── bootstrap
+├── category.php
+├── ceinfo.php
+├── comparesource.php
+├── config.yaml
+├── contest-check.php
+├── contest-header.php
+├── contest.php
+├── contestrank2.php
+├── contestrank3.php
+├── contestrank4.php
+├── contestrank5.php
+├── contestrank-oi.php
+├── contestrank.php
+├── contestrank.xls.php
+├── conteststatistics.php
+├── csrf.php
+├── discuss_func.inc.php
+├── discuss.php
+├── download.php
+├── export_ac_code.php
+├── export_contest_code.php
+├── faqs.cn.php
+├── faqs.php
+├── favicon.ico
+├── getsource.php
+├── gpl-2.0.txt
+├── index.php
+├── install.php
+├── loginpage.php
+├── login.php
+├── login_qq.php
+├── login_renren.php
+├── login_weibo.php
+├── logout.php
+├── lostpassword2.php
+├── lostpassword.php
+├── mail.php
+├── modify_email.php
+├── modify_info.php
+├── modifypage.php
+├── modify_password.php
+├── modify.php
+├── newpost.php
+├── oj-header.php
+├── online.php
+├── post.php
+├── printer.php
+├── printer_view.php
+├── problem-ajax.php
+├── problem.php
+├── problemset.php
+├── problemstatus.php
+├── ranklist.php
+├── recent-contest.php
+├── refresh-privilege.php
+├── registerpage.php
+├── register.php
+├── reinfo.php
+├── remote.php
+├── saasinit.php
+├── sae_app_wizard.xml
+├── session.php
+├── setlang.php
+├── sharecodelist.php
+├── sharecodepage.php
+├── showsource2.php
+├── showsource.php
+├── status-ajax.php
+├── status.php
+├── submitpage.php
+├── submit.php
+├── superthread.php
+├── suspect_list.php
+├── test.lst
+├── threadadmin.php
+├── thread.php
+├── userinfo.php
+├── user_set_ip.php
+├── vcode.php
+└── viewnews.php
+```
 
