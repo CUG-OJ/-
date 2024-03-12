@@ -1,8 +1,21 @@
-前言
+### **热门OJ：**
 
-由于洛谷开放平台与HUSTOJ关系恶化，HUSTOJ暂时无法爬取洛谷的题目。
+- 华中科技大学OJ php+shell （维护人数多，使用人数多）
 
-在home/judge文件夹中：
+- 青岛大学OJ  VUE+Python开发
+- HydroOJ（首批接入洛谷开放平台，与洛谷关系密切）
+- 洛谷OJ 闭源
+- VJudge 闭源
+- 牛客竞赛OJ 闭源
+- 杭州电子科技大学OJ 闭源
+
+由于洛谷的商业行为，洛谷不支持HUSTOJ爬取题目。
+
+### 所需基础知识
+
+PHP（重要）、Linux、Shell、HTML/CSS/JS、MySQL、YAML（了解）、apache（了解）
+
+### 在home/judge文件夹中：
 
 ```shell
 ├── backup				#用于某些文件的备份
@@ -19,7 +32,7 @@
 ├── .profile			#设置权限（umask）为022。如果用户的私有可执行二进制（bin）存在，则设置bin路径来包含用户的
 └── hustoj.tar.gz		#解压缩得到judge/src/等文件
 ```
-在home/src/core文件夹(判题核心)中：
+### 在home/src/core文件夹(判题核心)中：
 
 ```shell
 ├── conf						#功能不知道,是config的缩写，属于配置文件
@@ -157,7 +170,7 @@ home/src/debian文件，编写了适应debian操作系统的代码，不常用�
 
 home/src/docker文件，编写了适应docker的代码，不常用，此处省略说明
 
-在home/src/install文件夹中
+### 在home/src/install文件夹中
 
 ```shell
 ├── A+B.xml
@@ -237,14 +250,14 @@ home/src/docker文件，编写了适应docker的代码，不常用，此处省�
 └── update.sql
 ```
 
-在home/src/web文件夹中
+### 在home/src/web文件夹中
 
 ```shell
 ├── ace					#实现在线代码编辑器的功能
 ├── admin				#管理员页面
 ├── bbs					#网站的论坛功能
 ├── bsadmin
-├── highlight
+├── highlight			#通用代码高亮插件
 ├── image				#存储网站的背景、图标
 ├── include
 ├── kindeditor
@@ -257,11 +270,12 @@ home/src/docker文件，编写了适应docker的代码，不常用，此处省�
 │   ├── ru.php			#--俄罗斯语言
 │   ├── th.php			#--泰国语言
 │   └── ug.php			#--乌干达语言
-├── mergely
+├── mergely				#文档对比和合并工具
 ├── swadmin
 ├── template			#此处存储着前端模板
 ├── upload
-├── 404.html
+│   └── index.html		#此处为空，作用未知
+├── 404.html			#404，找不到网页时显示，装饰性作用
 ├── active.php
 ├── balloon.php
 ├── balloon_view.php
@@ -327,7 +341,7 @@ home/src/docker文件，编写了适应docker的代码，不常用，此处省�
 ├── reinfo.php
 ├── remote.php
 ├── saasinit.php
-├── sae_app_wizard.xml
+├── sae_app_wizard.xml		#新浪云应用服务，冗余功能
 ├── session.php
 ├── setlang.php
 ├── sharecodelist.php
