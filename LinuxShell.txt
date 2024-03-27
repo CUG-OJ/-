@@ -1,0 +1,7 @@
+grep  标准输入中查找字符串 echo "hello world" | grep -c world
+screen 是Linux终端命令神器
+ttr 转义命令 tr a-z A-Z
+-gt 整型变量大于运算符 GreateThan
+TTL 指定IP包被路由器丢弃前允许通过的最大网段数量Time to Live
+echo $TERM 查看终端 $TERM是预定义标识符
+awk 格式化读取命令
