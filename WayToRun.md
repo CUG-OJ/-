@@ -10,7 +10,7 @@ fi
 #判断总的物理内存，尽量大于1G
 MEM=`free -m|grep Mem|awk '{print $2}'`
 if [ "$MEM" -lt "1000" ] ; then
-#忽略此代码的注释，内存小于1GB罕见
+#忽略此代码的注释，服务器内存小于1GB罕见
         echo "Memory size less than 1GB."
         if grep 'swap' /etc/fstab ; then
                 echo "already has swap"
@@ -125,59 +125,83 @@ chmod 700 backup
 chmod 700 etc/judge.conf
 #递归指定etc的所有组和所有者为root
 chown -R root:root etc
-#
+#在db_info（总的配置文件中），显示用户名密码
 sed -i "s/DB_USER[[:space:]]*=[[:space:]]*\".*\"/DB_USER=\"$USER\"/g" src/web/include/db_info.inc.php
 sed -i "s/DB_PASS[[:space:]]*=[[:space:]]*\".*\"/DB_PASS=\"$PASSWORD\"/g" src/web/include/db_info.inc.php
+#文件所有者具有读、写、执行的权限
 chmod 700 src/web/include/db_info.inc.php
+#更改web（网页端）及子目录的拥有者设置为用户www-data，用户组:www-data
 chown -R www-data:www-data src/web/
-
+#更改svn（版本控制系统）及子目录的拥有者设置为用户root，用户组root
 chown -R root:root src/web/.svn
+#将svn2（版本控制系统）的权限设置为，所有者读写执行，用户组读、执行，其他用户没有权限
 chmod 750 -R src/web/.svn2
-
+#更改src/web/upload及子目录的拥有者设置为用户www-data，用户组www-data
 chown www-data:www-data src/web/upload
+#更改data及子目录的拥有者设置为用户www-data，用户组judge
 chown www-data:judge data
+#将data的权限设置为，所有者读写执行，用户组读、执行，其他用户没有权限
 chmod 750 -R data
+#将nginx的请求体最大设置为280m（先查询配置文件，若没有则新增）
 if grep "client_max_body_size" /etc/nginx/nginx.conf ; then
         echo "client_max_body_size already added" ;
 else
         sed -i "s:include /etc/nginx/mime.types;:client_max_body_size    280m;\n\tinclude /etc/nginx/mime.types;:g" /etc/nginx/nginx.conf
 fi
-
+#MySQL根据用户名密码登录，执行插入数据库语句（也就是，通过管道 |，将 SQL 插入语句传递给 mysql 客户端命令）
 echo "insert into jol.privilege values('admin','administrator','true','N');"|mysql -h localhost -u"$USER" -p"$PASSWORD"
 echo "insert into jol.privilege values('admin','source_browser','true','N');"|mysql -h localhost -u"$USER" -p"$PASSWORD"
-
+#配置Nginx
 if grep "added by hustoj" /etc/nginx/sites-enabled/default ; then
         echo "default site modified!"
 else
         echo "modify the default site"
+        #（全局替换）网络端在/home/judge/src/web文件夹中
         sed -i "s#root /var/www/html;#root /home/judge/src/web;#g" /etc/nginx/sites-enabled/default
+		#（全局替换）将默认的主页（index）设置为index.html,index.php
         sed -i "s:index index.html:index index.php:g" /etc/nginx/sites-enabled/default
+        #替换的目的是，去除注释#location ~ \.php $
         sed -i "s:#location ~ \\\.php\\$:location ~ \\\.php\\$:g" /etc/nginx/sites-enabled/default
+        #替换的目的是，去除注释
         sed -i "s:#\tinclude snippets:\tinclude snippets:g" /etc/nginx/sites-enabled/default
+        #替换的目的是，去除注释
         sed -i "s|#\tfastcgi_pass unix|\tfastcgi_pass unix|g" /etc/nginx/sites-enabled/default
+        #将#added by hustoj，替换为空
         sed -i "s:}#added by hustoj::g" /etc/nginx/sites-enabled/default
+        #将php7.4替换为php的版本
         sed -i "s:php7.4:php$PHP_VER:g" /etc/nginx/sites-enabled/default
+        #将# deny access to .htaccess files，替换为}#added by hustoj    # deny access to .htaccess files
         sed -i "s|# deny access to .htaccess files|}#added by hustoj\n\n\n\t# deny access to .htaccess files|g" /etc/nginx/sites-enabled/default
+        #将前者替换为后者，定义了响应头的缓冲区大小为256KB，主体有32个64KB的缓冲区
         sed -i "s|fastcgi_pass 127.0.0.1:9000;|fastcgi_pass 127.0.0.1:9000;\n\t\tfastcgi_buffer_size 256k;\n\t\tfastcgi_buffers 32 64k;|g" /etc/nginx/sites-enabled/default
 fi
+#重启nginx服务
 /etc/init.d/nginx restart
+#替换php的post的最大值为180MB
 sed -i "s/post_max_size = 8M/post_max_size = 180M/g" /etc/php/$PHP_VER/fpm/php.ini
+#替换php的上传文件的最大值为180MB
 sed -i "s/upload_max_filesize = 2M/upload_max_filesize = 180M/g" /etc/php/$PHP_VER/fpm/php.ini
+#不知道，配置文件相关?
 WWW_CONF=$(find /etc/php -name www.conf)
+#一个请求可以运行的最长时间为128秒
 sed -i 's/;request_terminate_timeout = 0/request_terminate_timeout = 128/g' "$WWW_CONF"
+#进程池最多有600个子进程
 sed -i 's/pm.max_children = 5/pm.max_children = 600/g' "$WWW_CONF"
-
+#CPU芯片每秒钟能够处理的指令数量,取第一行，:作为分隔符。修正CPU速度（即修正程序的运行限制时间）
 COMPENSATION=$(grep 'mips' /proc/cpuinfo|head -1|awk -F: '{printf("%.2f",$2/3000)}')
 sed -i "s/OJ_CPU_COMPENSATION=1.0/OJ_CPU_COMPENSATION=$COMPENSATION/g" etc/judge.conf
-
+#查找名为php版本号-fpm的文件，并重启它
 PHP_FPM=$(find /etc/init.d/ -name "php*-fpm")
 $PHP_FPM restart
+#如果找到了PHP FPM，就重启
 PHP_FPM=$(service --status-all|grep php|awk '{print $4}')
 if [ "$PHP_FPM" != ""  ]; then service "$PHP_FPM" restart ;else echo "NO PHP FPM";fi;
-
+#进入src/core 核心文件夹
 cd src/core || exit
+#给予全部人执行权限，并运行
 chmod +x ./make.sh
 ./make.sh
+#开机自启/usr/bin/judged
 if grep "/usr/bin/judged" /etc/rc.local ; then
         echo "auto start judged added!"
 else
@@ -185,27 +209,38 @@ else
         echo "/usr/bin/judged" >> /etc/rc.local
         echo "exit 0" >> /etc/rc.local
 fi
+#添加自动备份
 if grep "bak.sh" /var/spool/cron/crontabs/root ; then
         echo "auto backup added!"
 else
+		#每天凌晨一点执行自动备份
         crontab -l > conf && echo "1 0 * * * /home/judge/src/install/bak.sh" >> conf && crontab conf && rm -f conf
         /etc/init.d/cron reload
 fi
+#创建符号软链接，即快捷方式
 ln -s /usr/bin/mcs /usr/bin/gmcs
-
+#运行程序
 /usr/bin/judged
+#复制粘贴系统服务的启动脚本
 cp /home/judge/src/install/hustoj /etc/init.d/hustoj
+#hustoj将在大多数常见的运行级别中启动和停止
 update-rc.d hustoj defaults
+#当系统启动时，自动启动如下服务
 systemctl enable hustoj
 systemctl enable nginx
 systemctl enable mariadb
+#（php的进程池服务）
 systemctl enable php$PHP_VER-fpm
 #systemctl enable judged
-
+#启动MariaDB（优于MySQL,是MySQL的分支）的服务
 /etc/init.d/mariadb start
+#创建文件夹
 mkdir /var/log/hustoj/
+#更改www-data为所有者
 chown www-data -R /var/log/hustoj/
+#进入/home/judge/src/install目录
 cd /home/judge/src/install
+
 if test -f  /.dockerenv ;then
         echo "Already in docker, skip docker installation, install some compilers ... "
         apt-get intall -y flex fp-compiler openjdk-14-jdk mono-devel
@@ -214,8 +249,10 @@ else
         sed -i 's|/usr/include/c++/9|/usr/include/c++/11|g' Dockerfile
         bash docker.sh
 fi
+#设置变量，以便显示
 IP=`curl http://hustoj.com/ip.php`
 LIP=`ip a|grep inet|grep brd|head -1|awk '{print $2}'|awk -F/ '{print $1}'`
+#清除屏幕，重新初始化终端
 clear
 reset
 
@@ -230,27 +267,6 @@ echo "如果发现数据库账号登录错误，可用sudo bash /home/judge/src/
 echo "遇到服务器内部错误500，查看/var/log/nginx/error.log末尾，寻找详细原因。"
 echo "更多问题请查阅http://hustoj.com/"
 echo "不要在QQ群或其他地方公开发送以上信息，否则可能导致系统安全受到威胁。"
-echo "█████████████████████████████████████████"
-echo "████ ▄▄▄▄▄ ██▄▄ ▀  █▀█▄▄██ ███ ▄▄▄▄▄ ████"
-echo "████ █   █ █▀▄  █▀██ ██▄▄  █▄█ █   █ ████"
-echo "████ █▄▄▄█ █▄▀ █▄█▀█  ▄▄█▀▀▄██ █▄▄▄█ ████"
-echo "████▄▄▄▄▄▄▄█▄▀▄█ █ █▄█▄▀ █ ▀▄█▄▄▄▄▄▄▄████"
-echo "████ ▄▀▀█▄▄ █▄ █▄▄▄█▄█▀███▄  ██▀ ▄▀▀█████"
-echo "████▀█▀▀▀▀▄▀▀▄▀ ▄▄█▄ █▀▀ ▄▀▀▄  █▄▄▀▄█████"
-echo "████▄█ ▀▄▀▄▄ ▄ █▀█▀█ ▄▀▄ █▀▀▄█  ███  ████"
-echo "████▄ █▄ █▄▀▀▄██▀▄ ▄ ▄▄█▄█▀█▀   ▄█▀▄▀████"
-echo "████▄▄█   ▄▄██ █▄▄▀  ▄▀█▀▀▀ ▄█▀▄▄▀█ ▀████"
-echo "█████▄   ▀▄▄█ ▄▀▄▄▀▄▄▄▀▄▀█▀  ▀▀█▄█▀█▄████"
-echo "████ ▀ █▄▀▄▄█▀▀▄▀▀▄▄▄ ▀▀█▀ ▀▄▄█▀ ▀█ █████"
-echo "████ █▀   ▄ ▄ ▀█▀▄█ █▄▄███▀██▀▀██ ▀▄█████"
-echo "████▄▄▄██▄▄█ ▀█▄▄▄▀█ █▀▀█▀ █ ▄▄▄ █▀▄▀████"
-echo "████ ▄▄▄▄▄ █ ▄  ▄▄▀  ▄ ▀▄▄▄▄ █▄█   ▄█████"
-echo "████ █   █ ██ ▄▄▀▀█ ▀▀▀▀▀ ▄▀  ▄  ▀███████"
-echo "████ █▄▄▄█ █▀▄▄▄▀▀█ ▀▄ ▄▀██▄█ ██ █ █▄████"
-echo "████▄▄▄▄▄▄▄█▄███▄█▄▄▄████▄▄▄▄▄▄█▄██▄█████"
-echo "█████████████████████████████████████████"
-echo "            QQ扫码加官方群"
-
 
 ```
 
