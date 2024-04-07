@@ -1,3 +1,11 @@
+```mermaid
+graph LR
+	install-ubuntu22.04.sh-.|安装解压|.->/home/judge;
+	install-ubuntu22.04.sh-.|执行|.->src/install/db.sql;
+```
+
+
+
 ## 运行文件 install/install-ubuntu22.04.sh
 
 ```shell
@@ -270,3 +278,4 @@ echo "不要在QQ群或其他地方公开发送以上信息，否则可能导致
 
 ```
 
+## 执行 src/install/db.sql
